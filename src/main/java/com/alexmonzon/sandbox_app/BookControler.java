@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/books")
 public class BookControler {
 
     private final BookRepository bookRepository;
@@ -18,12 +19,12 @@ public class BookControler {
 
     }
 
-    @GetMapping("/books")
+    @GetMapping("/")
     public List<Book> getAllBooks() {
         return this.bookRepository.findAll();
     }
 
-    @GetMapping("/books/{isbn}")
+    @GetMapping("/{isbn}")
     public ResponseEntity<Book> getBookIsbn(@PathVariable String isbn) {
         Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
         if (optionalBook.isPresent()) {
@@ -41,7 +42,7 @@ public class BookControler {
         return book;
     }
 
-    @DeleteMapping("/(isbn)")
+    @DeleteMapping("/{isbn}")
     public void deleteBookByIsbn(@PathVariable String isbn) {
         //TODO comprobar si no existe devolver 404
         //TODO si se ha borrado devolver ok
@@ -49,5 +50,16 @@ public class BookControler {
     }
 
     //TODO CREAR UPDATE.
+    @PutMapping("/{isbn}")
+    public ResponseEntity<Book> updateBookByIsbn(@PathVariable String isbn, @RequestBody Book book) {
+        Optional<Book> optionalBook = bookRepository.updateBook(isbn, book);
+        if (optionalBook.isPresent()) {
+            return new ResponseEntity<>(optionalBook.get(), HttpStatus.OK);// Retorna el libro actualizado con un código 200
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retorna un 404 si el libro no fue encontrado
+        }
+    }
+
+
 
 }

@@ -13,4 +13,5 @@ public interface BookRepository {
 
     void deleteByIsbn(String isbn);
 
+    public Optional<Book> updateBook(String isbn, Book book);
 }
