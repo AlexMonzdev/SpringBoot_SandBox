@@ -34,12 +34,13 @@ public class BookControler {
     }
 
     @PostMapping
-    public Book createBook(@RequestBody Book book) {
-        //TODO comprobar que no exista
-        //TODO si existe devolver un bad request
-        //TODO retornar un 201
+    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+        Optional<Book> optionalBook = bookRepository.findByIsbn(book.getIsbn());
+        if(optionalBook.isPresent()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         bookRepository.save(book);
-        return book;
+        return new ResponseEntity<>(book, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{isbn}")
@@ -49,7 +50,6 @@ public class BookControler {
         bookRepository.deleteByIsbn(isbn);
     }
 
-    //TODO CREAR UPDATE.
     @PutMapping("/{isbn}")
     public ResponseEntity<Book> updateBookByIsbn(@PathVariable String isbn, @RequestBody Book book) {
         Optional<Book> optionalBook = bookRepository.updateBook(isbn, book);
