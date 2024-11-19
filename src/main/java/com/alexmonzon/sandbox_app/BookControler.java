@@ -44,19 +44,24 @@ public class BookControler {
     }
 
     @DeleteMapping("/{isbn}")
-    public void deleteBookByIsbn(@PathVariable String isbn) {
-        //TODO comprobar si no existe devolver 404
-        //TODO si se ha borrado devolver ok
+    public ResponseEntity<?> deleteBookByIsbn(@PathVariable String isbn) {
+        Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
+        if (optionalBook.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         bookRepository.deleteByIsbn(isbn);
+        return new ResponseEntity<>("Libro con "+ isbn +" eliminado correctamente",HttpStatus.OK);
+
     }
 
     @PutMapping("/{isbn}")
     public ResponseEntity<Book> updateBookByIsbn(@PathVariable String isbn, @RequestBody Book book) {
         Optional<Book> optionalBook = bookRepository.updateBook(isbn, book);
         if (optionalBook.isPresent()) {
-            return new ResponseEntity<>(optionalBook.get(), HttpStatus.OK);// Retorna el libro actualizado con un código 200
+            return new ResponseEntity<>(optionalBook.get(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retorna un 404 si el libro no fue encontrado
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
